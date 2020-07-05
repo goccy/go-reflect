@@ -101,6 +101,22 @@ type MapIter = reflect.MapIter
 // in the description of each method.
 type ValueError = reflect.ValueError
 
+// SliceHeader is the runtime representation of a slice.
+// It cannot be used safely or portably and its representation may
+// change in a later release.
+// Moreover, the Data field is not sufficient to guarantee the data
+// it references will not be garbage collected, so programs must keep
+// a separate, correctly typed pointer to the underlying data.
+type SliceHeader = reflect.SliceHeader
+
+// StringHeader is the runtime representation of a string.
+// It cannot be used safely or portably and its representation may
+// change in a later release.
+// Moreover, the Data field is not sufficient to guarantee the data
+// it references will not be garbage collected, so programs must keep
+// a separate, correctly typed pointer to the underlying data.
+type StringHeader = reflect.StringHeader
+
 // A SelectCase describes a single case in a select operation.
 // The kind of case depends on Dir, the communication direction.
 //
