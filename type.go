@@ -5,27 +5,6 @@ import (
 	_ "unsafe"
 )
 
-var (
-	toRT = ToReflectType
-	toT  = ToType
-)
-
-func toRTs(v []*Type) []reflect.Type {
-	out := make([]reflect.Type, len(v))
-	for idx, vv := range v {
-		out[idx] = toRT(vv)
-	}
-	return out
-}
-
-func toTs(v []reflect.Value) []Value {
-	out := make([]Value, len(v))
-	for idx, vv := range v {
-		out[idx] = toV(vv)
-	}
-	return out
-}
-
 //go:linkname ifaceIndir reflect.ifaceIndir
 //go:noescape
 func ifaceIndir(*Type) bool
@@ -52,48 +31,6 @@ func ptrTo(typ *Type) *Type {
 
 func sliceOf(t *Type) *Type {
 	return toT(reflect.SliceOf(toRT(t)))
-}
-
-func toSFs(v []StructField) []reflect.StructField {
-	out := make([]reflect.StructField, len(v))
-	for idx, vv := range v {
-		out[idx] = toRSF(vv)
-	}
-	return out
-}
-
-func toRSF(v StructField) reflect.StructField {
-	return reflect.StructField{
-		Name:      v.Name,
-		PkgPath:   v.PkgPath,
-		Type:      ToReflectType(v.Type),
-		Tag:       v.Tag,
-		Offset:    v.Offset,
-		Index:     v.Index,
-		Anonymous: v.Anonymous,
-	}
-}
-
-func toSF(v reflect.StructField) StructField {
-	return StructField{
-		Name:      v.Name,
-		PkgPath:   v.PkgPath,
-		Type:      ToType(v.Type),
-		Tag:       v.Tag,
-		Offset:    v.Offset,
-		Index:     v.Index,
-		Anonymous: v.Anonymous,
-	}
-}
-
-func toM(v reflect.Method) Method {
-	return Method{
-		Name:    v.Name,
-		PkgPath: v.PkgPath,
-		Type:    ToType(v.Type),
-		Func:    toV(v.Func),
-		Index:   v.Index,
-	}
 }
 
 func structOf(fields []StructField) *Type {

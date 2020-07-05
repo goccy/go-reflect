@@ -539,17 +539,17 @@ func (t *Type) Kind() Kind {
 
 // Implements reports whether the type implements the interface type u.
 func (t *Type) Implements(u *Type) bool {
-	return type_Implements(t, ToReflectType(u))
+	return type_Implements(t, toRT(u))
 }
 
 // AssignableTo reports whether a value of the type is assignable to type u.
 func (t *Type) AssignableTo(u *Type) bool {
-	return type_AssignableTo(t, ToReflectType(u))
+	return type_AssignableTo(t, toRT(u))
 }
 
 // ConvertibleTo reports whether a value of the type is convertible to type u.
 func (t *Type) ConvertibleTo(u *Type) bool {
-	return type_ConvertibleTo(t, ToReflectType(u))
+	return type_ConvertibleTo(t, toRT(u))
 }
 
 // Comparable reports whether values of this type are comparable.

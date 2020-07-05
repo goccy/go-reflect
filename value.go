@@ -5,27 +5,6 @@ import (
 	"unsafe"
 )
 
-var (
-	toRV = ToReflectValue
-	toV  = ToValue
-)
-
-func toRVs(v []Value) []reflect.Value {
-	out := make([]reflect.Value, len(v))
-	for idx, vv := range v {
-		out[idx] = toRV(vv)
-	}
-	return out
-}
-
-func toVs(v []reflect.Value) []Value {
-	out := make([]Value, len(v))
-	for idx, vv := range v {
-		out[idx] = toV(vv)
-	}
-	return out
-}
-
 func value_Copy(dst Value, src Value) int {
 	return reflect.Copy(toRV(dst), toRV(src))
 }
@@ -43,49 +22,33 @@ func value_Indirect(v Value) Value {
 }
 
 func value_MakeChan(typ *Type, buffer int) Value {
-	return toV(reflect.MakeChan(ToReflectType(typ), buffer))
+	return toV(reflect.MakeChan(toRT(typ), buffer))
 }
 
 func value_MakeFunc(typ *Type, fn func([]Value) []Value) Value {
-	return toV(reflect.MakeFunc(ToReflectType(typ), func(args []reflect.Value) []reflect.Value {
+	return toV(reflect.MakeFunc(toRT(typ), func(args []reflect.Value) []reflect.Value {
 		return toRVs(fn(toVs(args)))
 	}))
 }
 
 func value_MakeMap(typ *Type) Value {
-	return toV(reflect.MakeMap(ToReflectType(typ)))
+	return toV(reflect.MakeMap(toRT(typ)))
 }
 
 func value_MakeMapWithSize(typ *Type, n int) Value {
-	return toV(reflect.MakeMapWithSize(ToReflectType(typ), n))
+	return toV(reflect.MakeMapWithSize(toRT(typ), n))
 }
 
 func value_MakeSlice(typ *Type, len, cap int) Value {
-	return toV(reflect.MakeSlice(ToReflectType(typ), len, cap))
+	return toV(reflect.MakeSlice(toRT(typ), len, cap))
 }
 
 func value_New(typ *Type) Value {
-	return toV(reflect.New(ToReflectType(typ)))
+	return toV(reflect.New(toRT(typ)))
 }
 
 func value_NewAt(typ *Type, p unsafe.Pointer) Value {
-	return toV(reflect.NewAt(ToReflectType(typ), p))
-}
-
-func toRSC(v SelectCase) reflect.SelectCase {
-	return reflect.SelectCase{
-		Dir:  v.Dir,
-		Chan: toRV(v.Chan),
-		Send: toRV(v.Send),
-	}
-}
-
-func toRSCs(v []SelectCase) []reflect.SelectCase {
-	out := make([]reflect.SelectCase, len(v))
-	for idx, vv := range v {
-		out[idx] = toRSC(vv)
-	}
-	return out
+	return toV(reflect.NewAt(toRT(typ), p))
 }
 
 func value_Select(cases []SelectCase) (int, Value, bool) {
@@ -94,7 +57,7 @@ func value_Select(cases []SelectCase) (int, Value, bool) {
 }
 
 func value_Zero(typ *Type) Value {
-	return toV(reflect.Zero(ToReflectType(typ)))
+	return toV(reflect.Zero(toRT(typ)))
 }
 
 func value_Addr(v Value) Value {
@@ -142,11 +105,11 @@ func value_Complex(v Value) complex128 {
 }
 
 func value_Convert(v Value, typ *Type) Value {
-	return toV(toRV(v).Convert(ToReflectType(typ)))
+	return toV(toRV(v).Convert(toRT(typ)))
 }
 
 func value_Elem(v Value) Value {
-	return ToValue(ToReflectValue(v).Elem())
+	return ToValue(toRV(v).Elem())
 }
 
 func value_Field(v Value, i int) Value {
@@ -178,7 +141,7 @@ func value_Int(v Value) int64 {
 }
 
 func value_Interface(v Value) interface{} {
-	return ToReflectValue(v).Interface()
+	return toRV(v).Interface()
 }
 
 func value_InterfaceData(v Value) [2]uintptr {
@@ -198,11 +161,11 @@ func value_Kind(v Value) Kind {
 }
 
 func value_Len(v Value) int {
-	return ToReflectValue(v).Len()
+	return toRV(v).Len()
 }
 
 func value_MapIndex(v Value, key Value) Value {
-	return ToValue(ToReflectValue(v).MapIndex(ToReflectValue(key)))
+	return toV(toRV(v).MapIndex(toRV(key)))
 }
 
 func value_MapKeys(v Value) []Value {
@@ -291,7 +254,7 @@ func value_SetLen(v Value, i int) {
 }
 
 func value_SetMapIndex(v Value, key Value, elem Value) {
-	ToReflectValue(v).SetMapIndex(ToReflectValue(key), ToReflectValue(elem))
+	toRV(v).SetMapIndex(toRV(key), toRV(elem))
 }
 
 func value_SetPointer(v Value, p unsafe.Pointer) {
