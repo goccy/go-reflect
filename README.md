@@ -9,7 +9,7 @@ reflection library of zero allocation depending on path for Go
 
 - 100% Compatibility APIs with `reflect` library
 - No allocation occurs when using the reflect.Type features
-- You can choose to escape or noescape when creating reflect.Value
+- You can choose to escape ( `reflect.ValueOf` ) or noescape ( `reflect.ValueNoEscapeOf` ) when creating reflect.Value
 
 # Status
 
