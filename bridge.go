@@ -1,13 +1,13 @@
 package reflect
 
-import "reflect"
-
-var (
-	toRT = ToReflectType
-	toT  = ToType
-	toRV = ToReflectValue
-	toV  = ToValue
+import (
+	"reflect"
+	"unsafe"
 )
+
+func toRT(t *Type) reflect.Type {
+	return type_toType(t)
+}
 
 func toRTs(t []*Type) []reflect.Type {
 	out := make([]reflect.Type, len(t))
@@ -15,6 +15,10 @@ func toRTs(t []*Type) []reflect.Type {
 		out[idx] = toRT(tt)
 	}
 	return out
+}
+
+func toT(t reflect.Type) *Type {
+	return (*Type)(((*Value)(unsafe.Pointer(&t))).ptr)
 }
 
 func toTs(v []reflect.Value) []Value {
@@ -25,12 +29,20 @@ func toTs(v []reflect.Value) []Value {
 	return out
 }
 
+func toRV(v Value) reflect.Value {
+	return *(*reflect.Value)(unsafe.Pointer(&v))
+}
+
 func toRVs(v []Value) []reflect.Value {
 	out := make([]reflect.Value, len(v))
 	for idx, vv := range v {
 		out[idx] = toRV(vv)
 	}
 	return out
+}
+
+func toV(v reflect.Value) Value {
+	return *(*Value)(unsafe.Pointer(&v))
 }
 
 func toVs(v []reflect.Value) []Value {

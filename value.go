@@ -109,7 +109,7 @@ func value_Convert(v Value, typ *Type) Value {
 }
 
 func value_Elem(v Value) Value {
-	return ToValue(toRV(v).Elem())
+	return toV(toRV(v).Elem())
 }
 
 func value_Field(v Value, i int) Value {

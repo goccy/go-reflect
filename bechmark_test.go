@@ -18,11 +18,11 @@ func kindFromGoReflect(v interface{}) goreflect.Kind {
 func f(_ interface{}) {}
 
 func valueFromReflect(v interface{}) {
-	f(reflect.ValueOf(v))
+	f(reflect.ValueOf(v).Elem())
 }
 
 func valueFromGoReflect(v interface{}) {
-	f(goreflect.ValueNoEscapeOf(v))
+	f(goreflect.ValueNoEscapeOf(v).Elem())
 }
 
 func Benchmark_TypeOf_Reflect(b *testing.B) {
@@ -50,6 +50,7 @@ func Benchmark_ValueOf_Reflect(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		valueFromReflect(&struct {
 			I int
+			F float64
 		}{I: 10})
 	}
 }
@@ -59,6 +60,7 @@ func Benchmark_ValueOf_GoReflect(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		valueFromGoReflect(&struct {
 			I int
+			F float64
 		}{I: 10})
 	}
 }

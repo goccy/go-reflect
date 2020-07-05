@@ -298,22 +298,22 @@ func ValueNoEscapeOf(v interface{}) Value {
 
 // ToReflectType convert *Type to reflect.Type
 func ToReflectType(t *Type) reflect.Type {
-	return type_toType(t)
+	return toRT(t)
 }
 
 // ToReflectValue convert Value to reflect.Value
 func ToReflectValue(v Value) reflect.Value {
-	return *(*reflect.Value)(unsafe.Pointer(&v))
+	return toRV(v)
 }
 
 // ToType convert reflect.Type to *Type
 func ToType(t reflect.Type) *Type {
-	return (*Type)(((*Value)(unsafe.Pointer(&t))).ptr)
+	return toT(t)
 }
 
 // ToValue convert reflect.Value to Value
 func ToValue(v reflect.Value) Value {
-	return *(*Value)(unsafe.Pointer(&v))
+	return toV(v)
 }
 
 // Copy copies the contents of src into dst until either
