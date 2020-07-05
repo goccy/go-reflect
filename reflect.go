@@ -867,12 +867,6 @@ func (v Value) IsValid() bool {
 	return value_IsValid(v)
 }
 
-// IsZero reports whether v is the zero value for its type.
-// It panics if the argument is invalid.
-//func (v Value) IsZero() bool {
-//	return value_IsZero(v)
-//}
-
 // Kind returns v's Kind.
 // If v is the zero Value (IsValid returns false), Kind returns Invalid.
 func (v Value) Kind() Kind {

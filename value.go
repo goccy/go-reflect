@@ -193,12 +193,6 @@ func value_IsValid(v Value) bool {
 	return toRV(v).IsValid()
 }
 
-/*
-//go:linkname value_IsZero reflect.(*Value).IsZero
-//go:noescape
-func value_IsZero(Value) bool
-*/
-
 func value_Kind(v Value) Kind {
 	return toRV(v).Kind()
 }
