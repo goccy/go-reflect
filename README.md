@@ -3,7 +3,7 @@
 ![Go](https://github.com/goccy/go-reflect/workflows/Go/badge.svg)
 [![GoDoc](https://godoc.org/github.com/goccy/go-reflect?status.svg)](https://pkg.go.dev/github.com/goccy/go-reflect?tab=doc)
 
-reflection library of zero allocation depending on path for Go
+Zero-allocation (runtime path dependent) reflection library for Go
 
 # Features
 
