@@ -1,4 +1,8 @@
 # go-reflect
+
+![Go](https://github.com/goccy/go-reflect/workflows/Go/badge.svg)
+[![GoDoc](https://godoc.org/github.com/goccy/go-reflect?status.svg)](https://pkg.go.dev/github.com/goccy/go-reflect?tab=doc)
+
  Non-allocation reflect library for Go
 
 # Features
