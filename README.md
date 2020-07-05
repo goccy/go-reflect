@@ -3,11 +3,11 @@
 ![Go](https://github.com/goccy/go-reflect/workflows/Go/badge.svg)
 [![GoDoc](https://godoc.org/github.com/goccy/go-reflect?status.svg)](https://pkg.go.dev/github.com/goccy/go-reflect?tab=doc)
 
- Non-allocation reflect library for Go
+reflect library of zero allocation depending on path
 
 # Features
 
-- 100% Compatibility with `reflect` library
+- 100% Compatibility APIs with `reflect` library
 - No allocation occurs when using the reflect.Type features
 - You can choose to escape or noescape when creating reflect.Value
 
