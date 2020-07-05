@@ -22,7 +22,7 @@ func valueFromReflect(v interface{}) {
 }
 
 func valueFromGoReflect(v interface{}) {
-	f(goreflect.ValueOf(v))
+	f(goreflect.ValueNoEscapeOf(v))
 }
 
 func Benchmark_TypeOf_Reflect(b *testing.B) {

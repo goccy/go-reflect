@@ -263,11 +263,12 @@ func TypeOf(v interface{}) *Type {
 	return value.typ
 }
 
+// TypeID returns unique type identifier of v.
 func TypeID(v interface{}) uintptr {
 	return uintptr(unsafe.Pointer(TypeOf(v)))
 }
 
-func ValueOf(v interface{}) Value {
+func valueOf(v interface{}) Value {
 	if v == nil {
 		return Value{}
 	}
@@ -283,23 +284,34 @@ func ValueOf(v interface{}) Value {
 	return value
 }
 
-func EscapeValueOf(v interface{}) Value {
+// ValueOf returns a new Value initialized to the concrete value
+// stored in the interface i. ValueOf(nil) returns the zero Value.
+func ValueOf(v interface{}) Value {
 	escape(v)
-	return ValueOf(v)
+	return valueOf(v)
 }
 
+// ValueNoEscapeOf no escape of ValueOf.
+func ValueNoEscapeOf(v interface{}) Value {
+	return valueOf(v)
+}
+
+// ToReflectType convert *Type to reflect.Type
 func ToReflectType(t *Type) reflect.Type {
 	return type_toType(t)
 }
 
+// ToReflectValue convert Value to reflect.Value
 func ToReflectValue(v Value) reflect.Value {
 	return *(*reflect.Value)(unsafe.Pointer(&v))
 }
 
+// ToType convert reflect.Type to *Type
 func ToType(t reflect.Type) *Type {
 	return (*Type)(((*Value)(unsafe.Pointer(&t))).ptr)
 }
 
+// ToValue convert reflect.Value to Value
 func ToValue(v reflect.Value) Value {
 	return *(*Value)(unsafe.Pointer(&v))
 }
