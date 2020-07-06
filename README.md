@@ -16,6 +16,21 @@ Zero-allocation (runtime path dependent) reflection library for Go
 All the tests in the reflect library have been passed
 except the tests that use some private functions.
 
+# Installation
+
+```bash
+go get github.com/goccy/go-reflect
+```
+
+# How to use
+
+Replace import statement from `reflect` to `github.com/goccy/go-reflect`
+
+```bash
+-import "reflect"
++import "github.com/goccy/go-reflect"
+```
+
 # Benchmarks
 
 Source https://github.com/goccy/go-reflect/blob/master/bechmark_test.go
