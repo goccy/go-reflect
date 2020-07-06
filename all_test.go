@@ -233,7 +233,7 @@ var valueTests = []pair{
 	},
 }
 
-func testType(t *testing.T, i int, typ *Type, want string) {
+func testType(t *testing.T, i int, typ Type, want string) {
 	s := typ.String()
 	if s != want {
 		t.Errorf("#%d: have %#q, want %#q", i, s, want)
@@ -2488,7 +2488,7 @@ func TestFieldByName(t *testing.T) {
 
 func TestImportPath(t *testing.T) {
 	tests := []struct {
-		t    *Type
+		t    Type
 		path string
 	}{
 		{TypeOf(&base64.Encoding{}).Elem(), "encoding/base64"},
@@ -3723,8 +3723,8 @@ var convertTests = []struct {
 }
 
 func TestConvert(t *testing.T) {
-	canConvert := map[[2]*Type]bool{}
-	all := map[*Type]bool{}
+	canConvert := map[[2]Type]bool{}
+	all := map[Type]bool{}
 
 	for _, tt := range convertTests {
 		t1 := tt.in.Type()
@@ -3741,7 +3741,7 @@ func TestConvert(t *testing.T) {
 
 		all[t1] = true
 		all[t2] = true
-		canConvert[[2]*Type{t1, t2}] = true
+		canConvert[[2]Type{t1, t2}] = true
 
 		// vout1 represents the in value converted to the in type.
 		v1 := tt.in
@@ -3774,7 +3774,7 @@ func TestConvert(t *testing.T) {
 	// things like 'int64' converting to '*int'.
 	for t1 := range all {
 		for t2 := range all {
-			expectOK := t1 == t2 || canConvert[[2]*Type{t1, t2}] || t2.Kind() == Interface && t2.NumMethod() == 0
+			expectOK := t1 == t2 || canConvert[[2]Type{t1, t2}] || t2.Kind() == Interface && t2.NumMethod() == 0
 			if ok := t1.ConvertibleTo(t2); ok != expectOK {
 				t.Errorf("(%s).ConvertibleTo(%s) = %v, want %v", t1, t2, ok, expectOK)
 			}
@@ -3792,7 +3792,7 @@ type NonComparableStruct struct {
 }
 
 var comparableTests = []struct {
-	typ *Type
+	typ Type
 	ok  bool
 }{
 	{TypeOf(1), true},
@@ -3859,7 +3859,7 @@ func TestOverflow(t *testing.T) {
 	}
 }
 
-func checkSameType(t *testing.T, x *Type, y interface{}) {
+func checkSameType(t *testing.T, x Type, y interface{}) {
 	if x != TypeOf(y) || TypeOf(Zero(x).Interface()) != TypeOf(y) {
 		t.Errorf("did not find preexisting type for %s (vs %s)", TypeOf(x), TypeOf(y))
 	}
@@ -4422,7 +4422,7 @@ func TestStructOfGenericAlg(t *testing.T) {
 	})
 
 	tests := []struct {
-		rt  *Type
+		rt  Type
 		idx []int
 	}{
 		{
@@ -4624,7 +4624,7 @@ func TestStructOfWithInterface(t *testing.T) {
 	}
 	tests := []struct {
 		name string
-		typ  *Type
+		typ  Type
 		val  Value
 		impl bool
 	}{
@@ -5014,7 +5014,7 @@ func TestFuncOf(t *testing.T) {
 		}
 		return []Value{ValueOf(V(3.14))}
 	}
-	v := MakeFunc(FuncOf([]*Type{TypeOf(K(""))}, []*Type{TypeOf(V(0))}, false), fn)
+	v := MakeFunc(FuncOf([]Type{TypeOf(K(""))}, []Type{TypeOf(V(0))}, false), fn)
 
 	outs := v.Call([]Value{ValueOf(K("gopher"))})
 	if len(outs) != 1 {
@@ -5030,23 +5030,23 @@ func TestFuncOf(t *testing.T) {
 	// check that types already in binary are found
 	type T1 int
 	testCases := []struct {
-		in, out  []*Type
+		in, out  []Type
 		variadic bool
 		want     interface{}
 	}{
-		{in: []*Type{TypeOf(T1(0))}, want: (func(T1))(nil)},
-		{in: []*Type{TypeOf(int(0))}, want: (func(int))(nil)},
-		{in: []*Type{SliceOf(TypeOf(int(0)))}, variadic: true, want: (func(...int))(nil)},
-		{in: []*Type{TypeOf(int(0))}, out: []*Type{TypeOf(false)}, want: (func(int) bool)(nil)},
-		{in: []*Type{TypeOf(int(0))}, out: []*Type{TypeOf(false), TypeOf("")}, want: (func(int) (bool, string))(nil)},
+		{in: []Type{TypeOf(T1(0))}, want: (func(T1))(nil)},
+		{in: []Type{TypeOf(int(0))}, want: (func(int))(nil)},
+		{in: []Type{SliceOf(TypeOf(int(0)))}, variadic: true, want: (func(...int))(nil)},
+		{in: []Type{TypeOf(int(0))}, out: []Type{TypeOf(false)}, want: (func(int) bool)(nil)},
+		{in: []Type{TypeOf(int(0))}, out: []Type{TypeOf(false), TypeOf("")}, want: (func(int) (bool, string))(nil)},
 	}
 	for _, tt := range testCases {
 		checkSameType(t, FuncOf(tt.in, tt.out, tt.variadic), tt.want)
 	}
 
 	// check that variadic requires last element be a slice.
-	FuncOf([]*Type{TypeOf(1), TypeOf(""), SliceOf(TypeOf(false))}, nil, true)
-	shouldPanic(func() { FuncOf([]*Type{TypeOf(0), TypeOf(""), TypeOf(false)}, nil, true) })
+	FuncOf([]Type{TypeOf(1), TypeOf(""), SliceOf(TypeOf(false))}, nil, true)
+	shouldPanic(func() { FuncOf([]Type{TypeOf(0), TypeOf(""), TypeOf(false)}, nil, true) })
 	shouldPanic(func() { FuncOf(nil, nil, true) })
 }
 
@@ -5477,7 +5477,7 @@ func TestLargeGCProg(t *testing.T) {
 	fv.Call([]Value{ValueOf([256]*byte{})})
 }
 
-func fieldIndexRecover(t *Type, i int) (recovered interface{}) {
+func fieldIndexRecover(t Type, i int) (recovered interface{}) {
 	defer func() {
 		recovered = recover()
 	}()
@@ -5611,7 +5611,7 @@ func clobber() {
 }
 
 type funcLayoutTest struct {
-	rcvr, t                  *Type
+	rcvr, t                  Type
 	size, argsize, retOffset uintptr
 	stack                    []byte // pointer bitmap: 1 is pointer, 0 is scalar
 	gc                       []byte
@@ -5745,9 +5745,9 @@ func TestTypeOfTypeOf(t *testing.T) {
 	// Check that all the type constructors return concrete *rtype implementations.
 	// It's difficult to test directly because the reflect package is only at arm's length.
 	// The easiest thing to do is just call a function that crashes if it doesn't get an *rtype.
-	check := func(name string, typ *Type) {
-		if underlying := TypeOf(typ).String(); underlying != "*reflect.Type" {
-			t.Errorf("%v returned %v, not *reflect.Type", name, underlying)
+	check := func(name string, typ Type) {
+		if underlying := TypeOf(typ).String(); underlying != "*reflect.rtype" {
+			t.Errorf("%v returned %v, not *reflect.rtype", name, underlying)
 		}
 	}
 
@@ -5756,7 +5756,7 @@ func TestTypeOfTypeOf(t *testing.T) {
 
 	check("ArrayOf", ArrayOf(10, TypeOf(T{})))
 	check("ChanOf", ChanOf(BothDir, TypeOf(T{})))
-	check("FuncOf", FuncOf([]*Type{TypeOf(T{})}, nil, false))
+	check("FuncOf", FuncOf([]Type{TypeOf(T{})}, nil, false))
 	check("MapOf", MapOf(TypeOf(T{}), TypeOf(T{})))
 	check("PtrTo", PtrTo(TypeOf(T{})))
 	check("SliceOf", SliceOf(TypeOf(T{})))
@@ -5855,12 +5855,12 @@ func TestNames(t *testing.T) {
 
 func TestTypeStrings(t *testing.T) {
 	type stringTest struct {
-		typ  *Type
+		typ  Type
 		want string
 	}
 	stringTests := []stringTest{
 		{TypeOf(func(int) {}), "func(int)"},
-		{FuncOf([]*Type{TypeOf(int(0))}, nil, false), "func(int)"},
+		{FuncOf([]Type{TypeOf(int(0))}, nil, false), "func(int)"},
 		{TypeOf(XM{}), "reflect_test.XM"},
 		{TypeOf(new(XM)), "*reflect_test.XM"},
 		{TypeOf(new(XM).String), "func() string"},

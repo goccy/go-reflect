@@ -16,7 +16,9 @@ import (
 // Type values are comparable, such as with the == operator,
 // so they can be used as map keys.
 // Two Type values are equal if they represent identical types.
-type Type struct{}
+type Type = *rtype
+
+type rtype struct{}
 
 type flag uintptr
 
@@ -157,7 +159,7 @@ type SelectDir = reflect.SelectDir
 // To compare two Values, compare the results of the Interface method.
 // Using == on two Values does not compare the underlying values they represent.
 type Value struct {
-	typ *Type
+	typ Type
 	ptr unsafe.Pointer
 	flag
 }
@@ -173,7 +175,7 @@ type Method struct {
 	Name    string
 	PkgPath string
 
-	Type  *Type // method type
+	Type  Type  // method type
 	Func  Value // func with receiver as first argument
 	Index int   // index for Type.Method
 }
@@ -187,7 +189,7 @@ type StructField struct {
 	// See https://golang.org/ref/spec#Uniqueness_of_identifiers
 	PkgPath string
 
-	Type      *Type     // field type
+	Type      Type      // field type
 	Tag       StructTag // field tag string
 	Offset    uintptr   // offset within struct, in bytes
 	Index     []int     // index sequence for Type.FieldByIndex
@@ -199,7 +201,7 @@ type StructField struct {
 //
 // If the resulting type would be larger than the available address space,
 // ArrayOf panics.
-func ArrayOf(count int, elem *Type) *Type {
+func ArrayOf(count int, elem Type) Type {
 	return arrayOf(count, elem)
 }
 
@@ -208,7 +210,7 @@ func ArrayOf(count int, elem *Type) *Type {
 //
 // The gc runtime imposes a limit of 64 kB on channel element types.
 // If t's size is equal to or exceeds this limit, ChanOf panics.
-func ChanOf(dir ChanDir, t *Type) *Type {
+func ChanOf(dir ChanDir, t Type) Type {
 	return chanOf(dir, t)
 }
 
@@ -219,7 +221,7 @@ func ChanOf(dir ChanDir, t *Type) *Type {
 // The variadic argument controls whether the function is variadic. FuncOf
 // panics if the in[len(in)-1] does not represent a slice and variadic is
 // true.
-func FuncOf(in, out []*Type, variadic bool) *Type {
+func FuncOf(in, out []Type, variadic bool) Type {
 	return funcOf(in, out, variadic)
 }
 
@@ -229,19 +231,19 @@ func FuncOf(in, out []*Type, variadic bool) *Type {
 //
 // If the key type is not a valid map key type (that is, if it does
 // not implement Go's == operator), MapOf panics.
-func MapOf(key, elem *Type) *Type {
+func MapOf(key, elem Type) Type {
 	return mapOf(key, elem)
 }
 
 // PtrTo returns the pointer type with element t.
 // For example, if t represents type Foo, PtrTo(t) represents *Foo.
-func PtrTo(t *Type) *Type {
+func PtrTo(t Type) Type {
 	return ptrTo(t)
 }
 
 // SliceOf returns the slice type with element type t.
 // For example, if t represents int, SliceOf(t) represents []int.
-func SliceOf(t *Type) *Type {
+func SliceOf(t Type) Type {
 	return sliceOf(t)
 }
 
@@ -252,13 +254,13 @@ func SliceOf(t *Type) *Type {
 // StructOf currently does not generate wrapper methods for embedded
 // fields and panics if passed unexported StructFields.
 // These limitations may be lifted in a future version.
-func StructOf(fields []StructField) *Type {
+func StructOf(fields []StructField) Type {
 	return structOf(fields)
 }
 
 // TypeOf returns the reflection Type that represents the dynamic type of i.
 // If i is a nil interface value, TypeOf returns nil.
-func TypeOf(v interface{}) *Type {
+func TypeOf(v interface{}) Type {
 	value := (*Value)(unsafe.Pointer(&v))
 	return value.typ
 }
@@ -296,8 +298,8 @@ func ValueNoEscapeOf(v interface{}) Value {
 	return valueOf(v)
 }
 
-// ToReflectType convert *Type to reflect.Type
-func ToReflectType(t *Type) reflect.Type {
+// ToReflectType convert Type to reflect.Type
+func ToReflectType(t Type) reflect.Type {
 	return toRT(t)
 }
 
@@ -306,8 +308,8 @@ func ToReflectValue(v Value) reflect.Value {
 	return toRV(v)
 }
 
-// ToType convert reflect.Type to *Type
-func ToType(t reflect.Type) *Type {
+// ToType convert reflect.Type to Type
+func ToType(t reflect.Type) Type {
 	return toT(t)
 }
 
@@ -406,7 +408,7 @@ func Indirect(v Value) Value {
 }
 
 // MakeChan creates a new channel with the specified type and buffer size.
-func MakeChan(typ *Type, buffer int) Value {
+func MakeChan(typ Type, buffer int) Value {
 	return value_MakeChan(typ, buffer)
 }
 
@@ -432,36 +434,36 @@ func MakeChan(typ *Type, buffer int) Value {
 // The Examples section of the documentation includes an illustration
 // of how to use MakeFunc to build a swap function for different types.
 //
-func MakeFunc(typ *Type, fn func(args []Value) (results []Value)) Value {
+func MakeFunc(typ Type, fn func(args []Value) (results []Value)) Value {
 	return value_MakeFunc(typ, fn)
 }
 
 // MakeMap creates a new map with the specified type.
-func MakeMap(typ *Type) Value {
+func MakeMap(typ Type) Value {
 	return value_MakeMap(typ)
 }
 
 // MakeMapWithSize creates a new map with the specified type
 // and initial space for approximately n elements.
-func MakeMapWithSize(typ *Type, n int) Value {
+func MakeMapWithSize(typ Type, n int) Value {
 	return value_MakeMapWithSize(typ, n)
 }
 
 // MakeSlice creates a new zero-initialized slice value
 // for the specified slice type, length, and capacity.
-func MakeSlice(typ *Type, len, cap int) Value {
+func MakeSlice(typ Type, len, cap int) Value {
 	return value_MakeSlice(typ, len, cap)
 }
 
 // New returns a Value representing a pointer to a new zero value
 // for the specified type. That is, the returned Value's Type is PtrTo(typ).
-func New(typ *Type) Value {
+func New(typ Type) Value {
 	return value_New(typ)
 }
 
 // NewAt returns a Value representing a pointer to a value of the
 // specified type, using p as that pointer.
-func NewAt(typ *Type, p unsafe.Pointer) Value {
+func NewAt(typ Type, p unsafe.Pointer) Value {
 	return value_NewAt(typ, p)
 }
 
@@ -481,19 +483,19 @@ func Select(cases []SelectCase) (int, Value, bool) {
 // which represents no value at all.
 // For example, Zero(TypeOf(42)) returns a Value with Kind Int and value 0.
 // The returned value is neither addressable nor settable.
-func Zero(typ *Type) Value {
+func Zero(typ Type) Value {
 	return value_Zero(typ)
 }
 
 // Align returns the alignment in bytes of a value of
 // this type when allocated in memory.
-func (t *Type) Align() int {
+func (t Type) Align() int {
 	return type_Align(t)
 }
 
 // FieldAlign returns the alignment in bytes of a value of
 // this type when used as a field in a struct.
-func (t *Type) FieldAlign() int {
+func (t Type) FieldAlign() int {
 	return type_FieldAlign(t)
 }
 
@@ -508,7 +510,7 @@ func (t *Type) FieldAlign() int {
 //
 // Only exported methods are accessible and they are sorted in
 // lexicographic order.
-func (t *Type) Method(a0 int) Method {
+func (t Type) Method(a0 int) Method {
 	return toM(type_Method(t, a0))
 }
 
@@ -520,19 +522,19 @@ func (t *Type) Method(a0 int) Method {
 //
 // For an interface type, the returned Method's Type field gives the
 // method signature, without a receiver, and the Func field is nil.
-func (t *Type) MethodByName(a0 string) (Method, bool) {
+func (t Type) MethodByName(a0 string) (Method, bool) {
 	mtd, ok := type_MethodByName(t, a0)
 	return toM(mtd), ok
 }
 
 // NumMethod returns the number of exported methods in the type's method set.
-func (t *Type) NumMethod() int {
+func (t Type) NumMethod() int {
 	return type_NumMethod(t)
 }
 
 // Name returns the type's name within its package for a defined type.
 // For other (non-defined) types it returns the empty string.
-func (t *Type) Name() string {
+func (t Type) Name() string {
 	return type_Name(t)
 }
 
@@ -541,13 +543,13 @@ func (t *Type) Name() string {
 // If the type was predeclared (string, error) or not defined (*T, struct{},
 // []int, or A where A is an alias for a non-defined type), the package path
 // will be the empty string.
-func (t *Type) PkgPath() string {
+func (t Type) PkgPath() string {
 	return type_PkgPath(t)
 }
 
 // Size returns the number of bytes needed to store
 // a value of the given type; it is analogous to unsafe.Sizeof.
-func (t *Type) Size() uintptr {
+func (t Type) Size() uintptr {
 	return type_Size(t)
 }
 
@@ -556,32 +558,32 @@ func (t *Type) Size() uintptr {
 // (e.g., base64 instead of "encoding/base64") and is not
 // guaranteed to be unique among types. To test for type identity,
 // compare the Types directly.
-func (t *Type) String() string {
+func (t Type) String() string {
 	return type_String(t)
 }
 
 // Kind returns the specific kind of this type.
-func (t *Type) Kind() Kind {
+func (t Type) Kind() Kind {
 	return type_Kind(t)
 }
 
 // Implements reports whether the type implements the interface type u.
-func (t *Type) Implements(u *Type) bool {
+func (t Type) Implements(u Type) bool {
 	return type_Implements(t, toRT(u))
 }
 
 // AssignableTo reports whether a value of the type is assignable to type u.
-func (t *Type) AssignableTo(u *Type) bool {
+func (t Type) AssignableTo(u Type) bool {
 	return type_AssignableTo(t, toRT(u))
 }
 
 // ConvertibleTo reports whether a value of the type is convertible to type u.
-func (t *Type) ConvertibleTo(u *Type) bool {
+func (t Type) ConvertibleTo(u Type) bool {
 	return type_ConvertibleTo(t, toRT(u))
 }
 
 // Comparable reports whether values of this type are comparable.
-func (t *Type) Comparable() bool {
+func (t Type) Comparable() bool {
 	return type_Comparable(t)
 }
 
@@ -600,13 +602,13 @@ func (t *Type) Comparable() bool {
 // Bits returns the size of the type in bits.
 // It panics if the type's Kind is not one of the
 // sized or unsized Int, Uint, Float, or Complex kinds.
-func (t *Type) Bits() int {
+func (t Type) Bits() int {
 	return type_Bits(t)
 }
 
 // ChanDir returns a channel type's direction.
 // It panics if the type's Kind is not Chan.
-func (t *Type) ChanDir() ChanDir {
+func (t Type) ChanDir() ChanDir {
 	return type_ChanDir(t)
 }
 
@@ -622,20 +624,20 @@ func (t *Type) ChanDir() ChanDir {
 //	t.IsVariadic() == true
 //
 // IsVariadic panics if the type's Kind is not Func.
-func (t *Type) IsVariadic() bool {
+func (t Type) IsVariadic() bool {
 	return type_IsVariadic(t)
 }
 
 // Elem returns a type's element type.
 // It panics if the type's Kind is not Array, Chan, Map, Ptr, or Slice.
-func (t *Type) Elem() *Type {
+func (t Type) Elem() Type {
 	return ToType(type_Elem(t))
 }
 
 // Field returns a struct type's i'th field.
 // It panics if the type's Kind is not Struct.
 // It panics if i is not in the range [0, NumField()).
-func (t *Type) Field(i int) StructField {
+func (t Type) Field(i int) StructField {
 	return toSF(type_Field(t, i))
 }
 
@@ -643,13 +645,13 @@ func (t *Type) Field(i int) StructField {
 // to the index sequence. It is equivalent to calling Field
 // successively for each index i.
 // It panics if the type's Kind is not Struct.
-func (t *Type) FieldByIndex(index []int) StructField {
+func (t Type) FieldByIndex(index []int) StructField {
 	return toSF(type_FieldByIndex(t, index))
 }
 
 // FieldByName returns the struct field with the given name
 // and a boolean indicating if the field was found.
-func (t *Type) FieldByName(name string) (StructField, bool) {
+func (t Type) FieldByName(name string) (StructField, bool) {
 	field, ok := type_FieldByName(t, name)
 	return toSF(field), ok
 }
@@ -666,7 +668,7 @@ func (t *Type) FieldByName(name string) (StructField, bool) {
 // and FieldByNameFunc returns no match.
 // This behavior mirrors Go's handling of name lookup in
 // structs containing embedded fields.
-func (t *Type) FieldByNameFunc(match func(string) bool) (StructField, bool) {
+func (t Type) FieldByNameFunc(match func(string) bool) (StructField, bool) {
 	field, ok := type_FieldByNameFunc(t, match)
 	return toSF(field), ok
 }
@@ -674,44 +676,44 @@ func (t *Type) FieldByNameFunc(match func(string) bool) (StructField, bool) {
 // In returns the type of a function type's i'th input parameter.
 // It panics if the type's Kind is not Func.
 // It panics if i is not in the range [0, NumIn()).
-func (t *Type) In(i int) *Type {
+func (t Type) In(i int) Type {
 	return ToType(type_In(t, i))
 }
 
 // Key returns a map type's key type.
 // It panics if the type's Kind is not Map.
-func (t *Type) Key() *Type {
+func (t Type) Key() Type {
 	return ToType(type_Key(t))
 }
 
 // Len returns an array type's length.
 // It panics if the type's Kind is not Array.
-func (t *Type) Len() int {
+func (t Type) Len() int {
 	return type_Len(t)
 }
 
 // NumField returns a struct type's field count.
 // It panics if the type's Kind is not Struct.
-func (t *Type) NumField() int {
+func (t Type) NumField() int {
 	return type_NumField(t)
 }
 
 // NumIn returns a function type's input parameter count.
 // It panics if the type's Kind is not Func.
-func (t *Type) NumIn() int {
+func (t Type) NumIn() int {
 	return type_NumIn(t)
 }
 
 // NumOut returns a function type's output parameter count.
 // It panics if the type's Kind is not Func.
-func (t *Type) NumOut() int {
+func (t Type) NumOut() int {
 	return type_NumOut(t)
 }
 
 // Out returns the type of a function type's i'th output parameter.
 // It panics if the type's Kind is not Func.
 // It panics if i is not in the range [0, NumOut()).
-func (t *Type) Out(i int) *Type {
+func (t Type) Out(i int) Type {
 	return toT(type_Out(t, i))
 }
 
@@ -803,7 +805,7 @@ func (v Value) Complex() complex128 {
 // Convert returns the value v converted to type t.
 // If the usual Go conversion rules do not allow conversion
 // of the value v to type t, Convert panics.
-func (v Value) Convert(t *Type) Value {
+func (v Value) Convert(t Type) Value {
 	return value_Convert(v, t)
 }
 
@@ -1155,7 +1157,7 @@ func (v Value) TrySend(x Value) bool {
 }
 
 // Type returns v's type.
-func (v Value) Type() *Type {
+func (v Value) Type() Type {
 	return value_Type(v)
 }
 

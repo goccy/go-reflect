@@ -21,33 +21,33 @@ func value_Indirect(v Value) Value {
 	return toV(reflect.Indirect(toRV(v)))
 }
 
-func value_MakeChan(typ *Type, buffer int) Value {
+func value_MakeChan(typ Type, buffer int) Value {
 	return toV(reflect.MakeChan(toRT(typ), buffer))
 }
 
-func value_MakeFunc(typ *Type, fn func([]Value) []Value) Value {
+func value_MakeFunc(typ Type, fn func([]Value) []Value) Value {
 	return toV(reflect.MakeFunc(toRT(typ), func(args []reflect.Value) []reflect.Value {
 		return toRVs(fn(toVs(args)))
 	}))
 }
 
-func value_MakeMap(typ *Type) Value {
+func value_MakeMap(typ Type) Value {
 	return toV(reflect.MakeMap(toRT(typ)))
 }
 
-func value_MakeMapWithSize(typ *Type, n int) Value {
+func value_MakeMapWithSize(typ Type, n int) Value {
 	return toV(reflect.MakeMapWithSize(toRT(typ), n))
 }
 
-func value_MakeSlice(typ *Type, len, cap int) Value {
+func value_MakeSlice(typ Type, len, cap int) Value {
 	return toV(reflect.MakeSlice(toRT(typ), len, cap))
 }
 
-func value_New(typ *Type) Value {
+func value_New(typ Type) Value {
 	return toV(reflect.New(toRT(typ)))
 }
 
-func value_NewAt(typ *Type, p unsafe.Pointer) Value {
+func value_NewAt(typ Type, p unsafe.Pointer) Value {
 	return toV(reflect.NewAt(toRT(typ), p))
 }
 
@@ -56,7 +56,7 @@ func value_Select(cases []SelectCase) (int, Value, bool) {
 	return chosen, toV(recv), recvOK
 }
 
-func value_Zero(typ *Type) Value {
+func value_Zero(typ Type) Value {
 	return toV(reflect.Zero(toRT(typ)))
 }
 
@@ -104,7 +104,7 @@ func value_Complex(v Value) complex128 {
 	return toRV(v).Complex()
 }
 
-func value_Convert(v Value, typ *Type) Value {
+func value_Convert(v Value, typ Type) Value {
 	return toV(toRV(v).Convert(toRT(typ)))
 }
 
@@ -290,7 +290,7 @@ func value_TrySend(v Value, x Value) bool {
 	return toRV(v).TrySend(toRV(x))
 }
 
-func value_Type(v Value) *Type {
+func value_Type(v Value) Type {
 	return ToType(toRV(v).Type())
 }
 

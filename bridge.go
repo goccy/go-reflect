@@ -5,11 +5,11 @@ import (
 	"unsafe"
 )
 
-func toRT(t *Type) reflect.Type {
+func toRT(t Type) reflect.Type {
 	return type_toType(t)
 }
 
-func toRTs(t []*Type) []reflect.Type {
+func toRTs(t []Type) []reflect.Type {
 	out := make([]reflect.Type, len(t))
 	for idx, tt := range t {
 		out[idx] = toRT(tt)
@@ -17,8 +17,8 @@ func toRTs(t []*Type) []reflect.Type {
 	return out
 }
 
-func toT(t reflect.Type) *Type {
-	return (*Type)(((*Value)(unsafe.Pointer(&t))).ptr)
+func toT(t reflect.Type) Type {
+	return (Type)(((*Value)(unsafe.Pointer(&t))).ptr)
 }
 
 func toTs(v []reflect.Value) []Value {
