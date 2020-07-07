@@ -4179,37 +4179,37 @@ func TestStructOfFieldName(t *testing.T) {
 	// invalid field name "1nvalid"
 	shouldPanic(func() {
 		StructOf([]StructField{
-			StructField{Name: "valid", Type: TypeOf("")},
-			StructField{Name: "1nvalid", Type: TypeOf("")},
+			{Name: "valid", Type: TypeOf("")},
+			{Name: "1nvalid", Type: TypeOf("")},
 		})
 	})
 
 	// invalid field name "+"
 	shouldPanic(func() {
 		StructOf([]StructField{
-			StructField{Name: "val1d", Type: TypeOf("")},
-			StructField{Name: "+", Type: TypeOf("")},
+			{Name: "val1d", Type: TypeOf("")},
+			{Name: "+", Type: TypeOf("")},
 		})
 	})
 
 	// no field name
 	shouldPanic(func() {
 		StructOf([]StructField{
-			StructField{Name: "", Type: TypeOf("")},
+			{Name: "", Type: TypeOf("")},
 		})
 	})
 
 	// verify creation of a struct with valid struct fields
 	validFields := []StructField{
-		StructField{
+		{
 			Name: "φ",
 			Type: TypeOf(""),
 		},
-		StructField{
+		{
 			Name: "ValidName",
 			Type: TypeOf(""),
 		},
-		StructField{
+		{
 			Name: "Val1dNam5",
 			Type: TypeOf(""),
 		},
@@ -4226,21 +4226,21 @@ func TestStructOfFieldName(t *testing.T) {
 func TestStructOf(t *testing.T) {
 	// check construction and use of type not in binary
 	fields := []StructField{
-		StructField{
+		{
 			Name: "S",
 			Tag:  "s",
 			Type: TypeOf(""),
 		},
-		StructField{
+		{
 			Name: "X",
 			Tag:  "x",
 			Type: TypeOf(byte(0)),
 		},
-		StructField{
+		{
 			Name: "Y",
 			Type: TypeOf(uint64(0)),
 		},
-		StructField{
+		{
 			Name: "Z",
 			Type: TypeOf([3]uint16{}),
 		},
@@ -4322,20 +4322,20 @@ func TestStructOf(t *testing.T) {
 	// check duplicate names
 	shouldPanic(func() {
 		StructOf([]StructField{
-			StructField{Name: "string", Type: TypeOf("")},
-			StructField{Name: "string", Type: TypeOf("")},
+			{Name: "string", Type: TypeOf("")},
+			{Name: "string", Type: TypeOf("")},
 		})
 	})
 	shouldPanic(func() {
 		StructOf([]StructField{
-			StructField{Type: TypeOf("")},
-			StructField{Name: "string", Type: TypeOf("")},
+			{Type: TypeOf("")},
+			{Name: "string", Type: TypeOf("")},
 		})
 	})
 	shouldPanic(func() {
 		StructOf([]StructField{
-			StructField{Type: TypeOf("")},
-			StructField{Type: TypeOf("")},
+			{Type: TypeOf("")},
+			{Type: TypeOf("")},
 		})
 	})
 	// check that type already in binary is found
@@ -4345,7 +4345,7 @@ func TestStructOf(t *testing.T) {
 	type structFieldType interface{}
 	checkSameType(t,
 		StructOf([]StructField{
-			StructField{
+			{
 				Name: "F",
 				Type: TypeOf((*structFieldType)(nil)).Elem(),
 			},
