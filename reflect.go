@@ -286,6 +286,12 @@ func valueOf(v interface{}) Value {
 	return value
 }
 
+// TypeAndPtrOf returns raw Type and ptr value in favor of performance.
+func TypeAndPtrOf(v interface{}) (Type, unsafe.Pointer) {
+	value := (*Value)(unsafe.Pointer(&v))
+	return value.typ, value.ptr
+}
+
 // ValueOf returns a new Value initialized to the concrete value
 // stored in the interface i. ValueOf(nil) returns the zero Value.
 func ValueOf(v interface{}) Value {
