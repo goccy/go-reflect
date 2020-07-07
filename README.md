@@ -3,6 +3,7 @@
 ![Go](https://github.com/goccy/go-reflect/workflows/Go/badge.svg)
 [![GoDoc](https://godoc.org/github.com/goccy/go-reflect?status.svg)](https://pkg.go.dev/github.com/goccy/go-reflect?tab=doc)
 [![codecov](https://codecov.io/gh/goccy/go-reflect/branch/master/graph/badge.svg)](https://codecov.io/gh/goccy/go-reflect)
+[![Go Report Card](https://goreportcard.com/badge/github.com/goccy/go-reflect)](https://goreportcard.com/report/github.com/goccy/go-reflect)
 
 Zero-allocation (runtime path dependent) reflection library for Go
 
