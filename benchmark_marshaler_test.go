@@ -42,7 +42,7 @@ func Marshal(v interface{}) ([]byte, error) {
 	defer bufpool.Put(buf)
 
 	// Technique 3.
-	// builds a otimized path by typeID and caches it
+	// builds a optimized path by typeID and caches it
 	if enc, ok := typeToEncoderMap.Load(typeID); ok {
 		if err := enc.(encoder)(buf, p); err != nil {
 			return nil, err
@@ -55,7 +55,7 @@ func Marshal(v interface{}) ([]byte, error) {
 	}
 
 	// First time,
-	// builds a otimized path by type and caches it with typeID
+	// builds a optimized path by type and caches it with typeID.
 	enc, err := compile(typ)
 	if err != nil {
 		return nil, err
