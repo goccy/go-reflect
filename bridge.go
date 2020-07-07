@@ -21,14 +21,6 @@ func toT(t reflect.Type) Type {
 	return (Type)(((*Value)(unsafe.Pointer(&t))).ptr)
 }
 
-func toTs(v []reflect.Value) []Value {
-	out := make([]Value, len(v))
-	for idx, vv := range v {
-		out[idx] = toV(vv)
-	}
-	return out
-}
-
 func toRV(v Value) reflect.Value {
 	return *(*reflect.Value)(unsafe.Pointer(&v))
 }
