@@ -76,6 +76,8 @@ ok      github.com/goccy/go-reflect     3.578s
 I would like to introduce the technique I use for [github.com/goccy/go-json](https://github.com/goccy/go-json).  
 Using this technique, allocation can be suppressed to once for any marshaler.  
 
+Original Source is https://github.com/goccy/go-reflect/blob/master/benchmark_marshaler_test.go
+
 <img src="https://raw.githubusercontent.com/wiki/goccy/go-reflect/benchmark_marshaler_test.svg"></img>
 
 The benchmark result is as follows.  
