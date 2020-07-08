@@ -223,5 +223,3 @@ Benchmark_Marshal-16            16586372                71.0 ns/op             4
 PASS
 ```
 
-<img src="https://raw.githubusercontent.com/wiki/goccy/go-reflect/benchmark.svg"></img>
-
