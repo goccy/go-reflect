@@ -34,7 +34,7 @@ func sliceOf(t Type) Type {
 }
 
 func structOf(fields []StructField) Type {
-	return ToType(reflect.StructOf(toSFs(fields)))
+	return ToType(reflect.StructOf(toRSFs(fields)))
 }
 
 //go:linkname type_Align reflect.(*rtype).Align

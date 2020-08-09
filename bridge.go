@@ -45,7 +45,7 @@ func toVs(v []reflect.Value) []Value {
 	return out
 }
 
-func toSFs(v []StructField) []reflect.StructField {
+func toRSFs(v []StructField) []reflect.StructField {
 	out := make([]reflect.StructField, len(v))
 	for idx, vv := range v {
 		out[idx] = toRSF(vv)
