@@ -35,7 +35,7 @@ Replace import statement from `reflect` to `github.com/goccy/go-reflect`
 
 # Benchmarks
 
-Source https://github.com/goccy/go-reflect/blob/master/bechmark_test.go
+Source https://github.com/goccy/go-reflect/blob/master/benchmark_test.go
 
 ## Benchmark about reflect.Type
 
