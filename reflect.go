@@ -1184,3 +1184,12 @@ func (v Value) Uint() uint64 {
 func (v Value) UnsafeAddr() uintptr {
 	return value_UnsafeAddr(v)
 }
+
+// SetExport sets v's flag to fliped of flagRO.
+func (v Value) SetExport() Value {
+	ptr := unsafe.Pointer(&v)
+	fptr := (*uintptr)(unsafe.Pointer(uintptr(ptr) + flagOffset))
+	*fptr = *fptr &^ uintptr(flagRO)
+
+	return v
+}
