@@ -2,6 +2,7 @@ package reflect
 
 import (
 	"fmt"
+	"reflect"
 	"unsafe"
 )
 
@@ -166,4 +167,15 @@ func init() {
 	if err := validate(); err != nil {
 		panic(err)
 	}
+}
+
+// flagOffset represents a offset of reflect.Value flag field.
+var flagOffset uintptr
+
+func init() {
+	field, ok := ValueNoEscapeOf(reflect.Value{}).Type().FieldByName("flag")
+	if !ok {
+		panic("unable to find the flag field of reflect.Value")
+	}
+	flagOffset = field.Offset
 }
