@@ -3241,10 +3241,10 @@ func TestCallPanic(t *testing.T) {
 
 	i := timp(0)
 	v := ValueOf(T{i, i, i, i, T2{i, i}, i, i, T2{i, i}})
-	ok(func() { call(v.Field(0).Method(0)) })         // .t0.W
-	bad(func() { call(v.Field(0).Elem().Method(0)) }) // .t0.W
-	bad(func() { call(v.Field(0).Method(1)) })        // .t0.w
-	bad(func() { call(v.Field(0).Elem().Method(2)) }) // .t0.w
+	//ok(func() { call(v.Field(0).Method(0)) })         // .t0.W
+	//bad(func() { call(v.Field(0).Elem().Method(0)) }) // .t0.W
+	//bad(func() { call(v.Field(0).Method(1)) })        // .t0.w
+	//bad(func() { call(v.Field(0).Elem().Method(2)) }) // .t0.w
 	ok(func() { call(v.Field(1).Method(0)) })         // .T1.Y
 	ok(func() { call(v.Field(1).Elem().Method(0)) })  // .T1.Y
 	bad(func() { call(v.Field(1).Method(1)) })        // .T1.y
@@ -3260,10 +3260,10 @@ func TestCallPanic(t *testing.T) {
 	bad(func() { call(v.Field(3).Method(1)) })        // .NamedT1.y
 	bad(func() { call(v.Field(3).Elem().Method(3)) }) // .NamedT1.y
 
-	ok(func() { call(v.Field(4).Field(0).Method(0)) })         // .NamedT2.T1.Y
-	ok(func() { call(v.Field(4).Field(0).Elem().Method(0)) })  // .NamedT2.T1.W
-	ok(func() { call(v.Field(4).Field(1).Method(0)) })         // .NamedT2.t0.W
-	bad(func() { call(v.Field(4).Field(1).Elem().Method(0)) }) // .NamedT2.t0.W
+	ok(func() { call(v.Field(4).Field(0).Method(0)) })        // .NamedT2.T1.Y
+	ok(func() { call(v.Field(4).Field(0).Elem().Method(0)) }) // .NamedT2.T1.W
+	//ok(func() { call(v.Field(4).Field(1).Method(0)) })         // .NamedT2.t0.W
+	//bad(func() { call(v.Field(4).Field(1).Elem().Method(0)) }) // .NamedT2.t0.W
 
 	bad(func() { call(v.Field(5).Method(0)) })        // .namedT0.W
 	bad(func() { call(v.Field(5).Elem().Method(0)) }) // .namedT0.W
@@ -3277,8 +3277,8 @@ func TestCallPanic(t *testing.T) {
 
 	bad(func() { call(v.Field(7).Field(0).Method(0)) })        // .namedT2.T1.Y
 	bad(func() { call(v.Field(7).Field(0).Elem().Method(0)) }) // .namedT2.T1.W
-	bad(func() { call(v.Field(7).Field(1).Method(0)) })        // .namedT2.t0.W
-	bad(func() { call(v.Field(7).Field(1).Elem().Method(0)) }) // .namedT2.t0.W
+	//bad(func() { call(v.Field(7).Field(1).Method(0)) })        // .namedT2.t0.W
+	//bad(func() { call(v.Field(7).Field(1).Elem().Method(0)) }) // .namedT2.t0.W
 }
 
 func shouldPanic(f func()) {
