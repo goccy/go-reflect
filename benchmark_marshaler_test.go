@@ -25,7 +25,7 @@ type buffer struct {
 	b []byte
 }
 
-type encoder func(*buffer, uintptr) error
+type encoder func(*buffer, unsafe.Pointer) error
 
 func Marshal(v interface{}) ([]byte, error) {
 
@@ -33,7 +33,6 @@ func Marshal(v interface{}) ([]byte, error) {
 	// Get type information and pointer from interface{} value without allocation.
 	typ, ptr := reflect.TypeAndPtrOf(v)
 	typeID := reflect.TypeID(typ)
-	p := uintptr(ptr)
 
 	// Technique 2.
 	// Reuse the buffer once allocated using sync.Pool
@@ -44,7 +43,7 @@ func Marshal(v interface{}) ([]byte, error) {
 	// Technique 3.
 	// builds a optimized path by typeID and caches it
 	if enc, ok := typeToEncoderMap.Load(typeID); ok {
-		if err := enc.(encoder)(buf, p); err != nil {
+		if err := enc.(encoder)(buf, ptr); err != nil {
 			return nil, err
 		}
 
@@ -61,7 +60,7 @@ func Marshal(v interface{}) ([]byte, error) {
 		return nil, err
 	}
 	typeToEncoderMap.Store(typeID, enc)
-	if err := enc(buf, p); err != nil {
+	if err := enc(buf, ptr); err != nil {
 		return nil, err
 	}
 
@@ -92,11 +91,11 @@ func compileStruct(typ reflect.Type) (encoder, error) {
 			return nil, err
 		}
 		offset := field.Offset
-		encoders = append(encoders, func(buf *buffer, p uintptr) error {
-			return enc(buf, p+offset)
+		encoders = append(encoders, func(buf *buffer, p unsafe.Pointer) error {
+			return enc(buf, unsafe.Pointer(uintptr(p)+offset))
 		})
 	}
-	return func(buf *buffer, p uintptr) error {
+	return func(buf *buffer, p unsafe.Pointer) error {
 		buf.b = append(buf.b, '{')
 		for _, enc := range encoders {
 			if err := enc(buf, p); err != nil {
@@ -109,8 +108,8 @@ func compileStruct(typ reflect.Type) (encoder, error) {
 }
 
 func compileInt(typ reflect.Type) (encoder, error) {
-	return func(buf *buffer, p uintptr) error {
-		value := *(*int)(unsafe.Pointer(p))
+	return func(buf *buffer, p unsafe.Pointer) error {
+		value := *(*int)(p)
 		buf.b = strconv.AppendInt(buf.b, int64(value), 10)
 		return nil
 	}, nil
