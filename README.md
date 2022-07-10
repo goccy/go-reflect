@@ -78,6 +78,13 @@ Using this technique, allocation can be suppressed to once for any marshaler.
 
 Original Source is https://github.com/goccy/go-reflect/blob/master/benchmark_marshaler_test.go
 
+(you can find a full example with `map` and `slice` in ./bench_marshal_test.go)
+
+also, you may want to use a type `func(*Ctx, []byte, unsafe.Pointer) ([]byte, error)` as your encoder type.
+
+`buf.b = append(buf.b, ...)` will case a write barrier check on variable `buf`, 
+will impact performance badly in small encoder like encoder for `bool`, `int`, `uint` ...etc.
+
 ```go
 package reflect_test
 
@@ -221,4 +228,3 @@ pkg: github.com/goccy/go-reflect
 Benchmark_Marshal-16            16586372                71.0 ns/op             4 B/op          1 allocs/op
 PASS
 ```
-
