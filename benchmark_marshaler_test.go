@@ -2,6 +2,7 @@ package reflect_test
 
 import (
 	"errors"
+	"runtime"
 	"strconv"
 	"sync"
 	"testing"
@@ -108,16 +109,13 @@ func compileStruct(typ reflect.Type) (encoder, error) {
 		offset := field.Offset
 
 		indirect := IfaceIndir(field.Type)
-		if indirect && field.Type.Kind() == reflect.Map {
-			encoders = append(encoders, func(buf *buffer, p unsafe.Pointer) error {
-				// use unsafe.Add if you are using go1.17+
-				return enc(buf, ptrOfPtr(unsafe.Pointer(uintptr(p)+offset)))
-			})
-		} else {
-			encoders = append(encoders, func(buf *buffer, p unsafe.Pointer) error {
-				return enc(buf, unsafe.Pointer(uintptr(p)+offset))
-			})
-		}
+
+		// you will need this to handle some special case like map, ptr ...
+		runtime.KeepAlive(indirect)
+
+		encoders = append(encoders, func(buf *buffer, p unsafe.Pointer) error {
+			return enc(buf, unsafe.Pointer(uintptr(p)+offset))
+		})
 	}
 
 	return func(buf *buffer, p unsafe.Pointer) error {
