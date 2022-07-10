@@ -22,8 +22,7 @@ var (
 )
 
 type buffer struct {
-	b        []byte
-	KeepRefs []unsafe.Pointer
+	b []byte
 }
 
 type encoder func(*buffer, unsafe.Pointer) error
@@ -40,9 +39,6 @@ func Marshal(v interface{}) ([]byte, error) {
 	buf := bufpool.Get().(*buffer)
 	buf.b = buf.b[:0]
 	defer bufpool.Put(buf)
-
-	buf.KeepRefs = buf.KeepRefs[:0]
-	buf.KeepRefs = append(buf.KeepRefs, ptr)
 
 	// Technique 3.
 	// builds a optimized path by typeID and caches it
