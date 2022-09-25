@@ -32,7 +32,7 @@ func Marshal(v interface{}) ([]byte, error) {
 	// Technique 1.
 	// Get type information and pointer from interface{} value without allocation.
 	typ, ptr := reflect.TypeAndPtrOf(v)
-	typeID := reflect.TypeID(typ)
+	typeID := reflect.TypeID(v)
 
 	// Technique 2.
 	// Reuse the buffer once allocated using sync.Pool
@@ -97,7 +97,10 @@ func compileStruct(typ reflect.Type) (encoder, error) {
 	}
 	return func(buf *buffer, p unsafe.Pointer) error {
 		buf.b = append(buf.b, '{')
-		for _, enc := range encoders {
+		for i, enc := range encoders {
+			if i != 0 {
+				buf.b = append(buf.b, ' ')
+			}
 			if err := enc(buf, p); err != nil {
 				return err
 			}
@@ -123,7 +126,14 @@ func Benchmark_Marshal(b *testing.B) {
 			b.Fatal(err)
 		}
 		if string(bytes) != "{10}" {
-			b.Fatal("unexpected error")
+			b.Fatalf("unexpected error: %s", string(bytes))
+		}
+		bytes2, err := Marshal(struct{ I, J int }{10, 20})
+		if err != nil {
+			b.Fatal(err)
+		}
+		if string(bytes2) != "{10 20}" {
+			b.Fatalf("unexpected error: %s", string(bytes2))
 		}
 	}
 }
