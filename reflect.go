@@ -135,7 +135,6 @@ type StringHeader = reflect.StringHeader
 // Normally Chan's underlying value must be a channel and Send must be a zero Value.
 // If Chan is a zero Value, then the case is ignored, but Send must still be a zero Value.
 // When a receive operation is selected, the received Value is returned by Select.
-//
 type SelectCase struct {
 	Dir  SelectDir // direction of case
 	Chan Value     // channel to use (for send or receive)
@@ -194,6 +193,11 @@ type StructField struct {
 	Offset    uintptr   // offset within struct, in bytes
 	Index     []int     // index sequence for Type.FieldByIndex
 	Anonymous bool      // is an embedded field
+}
+
+// IsExported reports whether the field is exported.
+func (f StructField) IsExported() bool {
+	return f.PkgPath == ""
 }
 
 // ArrayOf returns the array type with the given count and element type.
@@ -335,7 +339,7 @@ func Copy(dst, src Value) int {
 	return value_Copy(dst, src)
 }
 
-// DeepEqual reports whether x and y are ``deeply equal,'' defined as follows.
+// DeepEqual reports whether x and y are “deeply equal,” defined as follows.
 // Two values of identical type are deeply equal if one of the following cases applies.
 // Values of distinct types are never deeply equal.
 //
@@ -422,9 +426,9 @@ func MakeChan(typ Type, buffer int) Value {
 // that wraps the function fn. When called, that new function
 // does the following:
 //
-//	- converts its arguments to a slice of Values.
-//	- runs results := fn(args).
-//	- returns the results as a slice of Values, one per formal result.
+//   - converts its arguments to a slice of Values.
+//   - runs results := fn(args).
+//   - returns the results as a slice of Values, one per formal result.
 //
 // The implementation fn can assume that the argument Value slice
 // has the number and type of arguments given by typ.
@@ -439,7 +443,6 @@ func MakeChan(typ Type, buffer int) Value {
 //
 // The Examples section of the documentation includes an illustration
 // of how to use MakeFunc to build a swap function for different types.
-//
 func MakeFunc(typ Type, fn func(args []Value) (results []Value)) Value {
 	return value_MakeFunc(typ, fn)
 }
@@ -870,7 +873,9 @@ func (v Value) Int() int64 {
 
 // Interface returns v's current value as an interface{}.
 // It is equivalent to:
+//
 //	var i interface{} = (v's underlying value)
+//
 // It panics if the Value was obtained by accessing
 // unexported struct fields.
 func (v Value) Interface() interface{} {
@@ -941,12 +946,11 @@ func (v Value) MapKeys() []Value {
 // Example:
 //
 //	iter := reflect.ValueOf(m).MapRange()
-// 	for iter.Next() {
+//	for iter.Next() {
 //		k := iter.Key()
 //		v := iter.Value()
 //		...
 //	}
-//
 func (v Value) MapRange() *MapIter {
 	return value_MapRange(v)
 }
