@@ -61,12 +61,15 @@ const (
 	Func
 	Interface
 	Map
-	Ptr
+	Pointer
 	Slice
 	String
 	Struct
 	UnsafePointer
 )
+
+// Ptr is the old name for the Pointer kind.
+const Ptr = Pointer
 
 const (
 	_             SelectDir = iota
